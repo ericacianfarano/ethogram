@@ -2,8 +2,6 @@
 Retinotopic_mapping.py
 Heavily inspired by Emily Mace's analysis script and the NeuroAnalysisTools library
 
-Rudi Tong, Trenholm Lab, 2020
-
 Version 1.1 (09.10.2020)
 
 Additional dependencies:
