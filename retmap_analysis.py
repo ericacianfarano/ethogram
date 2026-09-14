@@ -166,24 +166,6 @@ if project == 'restored' and over_time:
     plt.show()
 
 
-# for animal in [item for item in os.listdir(os.path.join(path))]:
-#     for day in [item for item in os.listdir(os.path.join(path, animal)) if
-#                 os.path.isdir(os.path.join(path, animal, item))]:
-#         for subfile in [item for item in os.listdir(os.path.join(path, animal, day)) if
-#                         os.path.isdir(os.path.join(path, animal, day, item))]:
-#             print(animal, day, subfile)
-#             config_path = fr'I:\retmap\{animal}\{day}\{subfile}\config.txt'
-#             mode = "2"
-#             run_retmap(config_path, mode)
-
-# parser = argparse.ArgumentParser()
-# parser.add_argument("config", help="File path to config file")
-# parser.add_argument("-m", "--mode", help="Choose analysis mode: 1 - Create complex fields\t 2 - Create and plot sign map")
-# args = parser.parse_args()
-#
-# run_retmap(args.config, args.mode)
-
-
 if __name__ == '__main__':
 
     from retmap import *
@@ -192,7 +174,6 @@ if __name__ == '__main__':
     project = 'ethogram'  # restored or ethogram
     over_time = False
     path = r'J:\retmap'
-
 
     if project == 'ethogram':
         animals_days = {
@@ -211,83 +192,6 @@ if __name__ == '__main__':
             'EC_GNAT_05': ['20240923'],
             'EC_GNAT_06': ['20240923']
         }
-
-        # animals_days = {'EC_phpeb_11': ['20241113'],
-        #                 # 'EC_GCaMP6s_12': ['20250123'],
-        #                 'EC_phpeb_13': ['20250123'],
-        #                 'EC_GNAT_03': ['20240924'],
-        #                 'EC_GNAT_05': ['20240924'],
-        #                 'EC_GNAT_06': ['20240924'],
-        #                 'EC_GNAT_04': ['20241004'],
-        #                 }
-
-    elif project == 'restored' and over_time:  # looking across rd1s and gnats, over time
-        animals_days = {
-            'EC_GCaMP6s_06': ['20241121', '20250408'],  # maybe remove day 1
-            'EC_GCaMP6s_09': ['20241009', '20241121', '20250408'],
-            'EC_GNAT_06': ['20240923', '20250404'],
-            'EC_GNAT_03': ['20240923', '20250408'],
-            # 'EC_GNAT_05': ['20240923', '20250408'],
-            'EC_RD1_05': ['20240903', '20240918', '20241121'],
-            'EC_RD1_06': ['20241001', '20241204', '20241218', '20250107', '20250408'],
-            'EC_RD1_08': ['20241001', '20241204', '20241218', '20250107', '20250408'],
-            'EC_RD1_09': ['20241006', '20241219', '20250109'],
-            'EC_RD1_10': ['20241006', '20241219', '20250109', '20250408'],
-        }
-        animals_birthdate = {'EC_GCaMP6s_06': '20240624',
-                             'EC_GCaMP6s_09': '20240414',
-                             'EC_GNAT_06': '20240621',
-                             'EC_GNAT_03': '20240621',
-                             # 'EC_GNAT_05': '20240621',
-                             'EC_RD1_05': '20240606',
-                             'EC_RD1_06': '20240704',
-                             # 'EC_RD1_07': '20240704',
-                             'EC_RD1_08': '20240704',
-                             'EC_RD1_09': '20240704',
-                             'EC_RD1_10': '20240704'}
-    elif project == 'restored':
-        animals_days = {'EC_GCaMP6s_05': ['20240917'],
-                        'EC_GCaMP6s_06': ['20241121'],
-                        'EC_GCaMP6s_08': ['20240918'],
-                        'EC_GCaMP6s_09': ['20241121'],
-                        'EC_RD1_05': ['20241121'],
-                        'EC_RD1_06': ['20250107'],
-                        'EC_RD1_07': ['20241204'],
-                        'EC_RD1_08': ['20250107'],
-                        'EC_RD1_09': ['20250109'],
-                        'EC_RD1_10': ['20250109'],
-                        'EC_RD1opto_04': ['20241111'],
-                        'EC_RD1opto_02': ['20241111'],
-                        'EC_RD1opto_05': ['20241118'],
-                        'EC_RD1opto_03': ['20241119'],
-                        'EC_RD1opto_08': ['20250305'],
-                        'EC_RD1opto_10': ['20250305'],
-                        'EC_GNAT_03': ['20240923'],
-                        'EC_GNAT_04': ['20241003'],
-                        'EC_GNAT_05': ['20240923'],
-                        'EC_GNAT_06': ['20250404']
-                        }
-        animals_birthdate = {'EC_GCaMP6s_05': '20240624',
-                             'EC_GCaMP6s_06': '20240624',
-                             'EC_GCaMP6s_08': '20240414',
-                             'EC_GCaMP6s_09': '20240414',
-                             'EC_GNAT_03': '20240621',
-                             'EC_GNAT_04': '20240621',
-                             'EC_GNAT_05': '20240621',
-                             'EC_GNAT_06': '20240621',
-                             'EC_RD1_05': '20240606',
-                             'EC_RD1_06': '20240704',
-                             'EC_RD1_07': '20240704',
-                             'EC_RD1_08': '20240704',
-                             'EC_RD1_09': '20240704',
-                             'EC_RD1_10': '20240704',
-                             'EC_RD1opto_04': '20240606',
-                             'EC_RD1opto_02': '20240517',
-                             'EC_RD1opto_05': '20240619',
-                             'EC_RD1opto_03': '20240606',
-                             'EC_RD1opto_08': '20240725',
-                             'EC_RD1opto_10': '20240731',
-                             }
 
     batch_retmap(animals_days, screen, path, draw_mask=False, draw_lines = False)
 

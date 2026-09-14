@@ -2,8 +2,6 @@
 Retinotopic_mapping.py
 Heavily inspired by Emily Mace's analysis script and the NeuroAnalysisTools library
 
-Version 1.1 (09.10.2020)
-
 Additional dependencies:
     ffmpeg is required for skvideo backend
 '''
@@ -178,49 +176,14 @@ class RetinotopicMap():
 
         self.mask = mask
         self.masked_amp_map = np.where(self.mask, avg_amp, 0)
-
         self.amp_threshold = np.mean(self.masked_amp_map) + 3 * np.std(self.masked_amp_map)
-
         self.amp_mask = avg_amp > self.amp_threshold
-
-        # self.masked_amp_map
-
-        # plt.figure()
-        # masked_amp_map_nan = np.where(self.mask, avg_amp, np.nan)
-        # plt.imshow(masked_amp_map_nan)
-        # plt.title(self.animal)
-        # plt.savefig(fr'G:\vision_restored\figures\202603grant\amp_map_{self.animal}.png')
-        # plt.savefig(fr'G:\vision_restored\figures\202603grant\amp_map_{self.animal}.svg')
-        # plt.show()
 
         pixel_size_mm = 1.0  # <--- adjust if you know your mm/pixel calibration
         # if pixel_size_mm = 1.0, the output areas will be in pixel counts
         # if we know the FOV in mm: pixel_size_mm = FOV (mm) / n_pixels_across FOV
         total_area, largest_neg_area, masked_amp_mean, largest_pos_area, self.masked_patch_map, amp_threshold = measure_visual_areas(self.sign_thresh, self.masked_amp_map, self.mask, pixel_size_mm=1/68, min_area = self.min_area, k_amp_threshold = 1)
 
-        # if self.animal_dob is not None: # if i have a day of birth (i.e., if DOB is important for the experiment)
-        #     age = calculate_animal_age(self.animal_dob, self.day)
-        #     if self.animal in total_visual_area_days: # if not already in the dictionary, make a new entry
-        #         print('a')
-        #         total_visual_area_days[self.animal][f'P{age}'] = total_area
-        #         largest_neg_patch_area_days[self.animal][f'P{age}'] = largest_neg_area
-        #         largest_pos_patch_area_days[self.animal][f'P{age}'] = largest_pos_area
-        #         # amplitude_threshold[self.animal][f'P{age}'] = amp_threshold
-        #     else:
-        #         print('b')
-        #         # create empty subditionaries
-        #         total_visual_area_days[self.animal] = {}
-        #         largest_neg_patch_area_days[self.animal] = {}
-        #         largest_pos_patch_area_days[self.animal] = {}
-        #         # amplitude_threshold[self.animal] = {}
-        #
-        #         # store entries in newly created subdictionaries
-        #         total_visual_area_days[self.animal][f'P{age}'] = total_area
-        #         largest_neg_patch_area_days[self.animal][f'P{age}'] = largest_neg_area
-        #         largest_pos_patch_area_days[self.animal][f'P{age}'] = largest_pos_area
-        #         # amplitude_threshold[self.animal][f'P{age}'] = amp_threshold
-
-        # print('heeeeeeeeeeeee')
         total_visual_area[self.animal] = total_area
         mean_amplitude[self.animal] = masked_amp_mean
         largest_neg_patch_area[self.animal] = largest_neg_area
@@ -294,64 +257,7 @@ class RetinotopicMap():
         # Save
         np.save(os.path.join(self.savefolder, self.savename + '_signmap.npy'), self.sign)
 
-    # def plot(self):
-    #     # Plot sign map - flip by 90 degrees ccw
-    #     self.fig, self.ax = pl.subplots(nrows=2, ncols=3, figsize=(12, 8))
-    #     self.ax[0, 0].imshow(rotate_image(self.sign, self.rotateMap), cmap=pl.cm.jet)
-    #     self.ax[0, 0].set_title('Raw sign map')
-    #
-    #     # Plot patch map - flip by 90 degrees ccw
-    #     if self.s_method == 'gaussian':
-    #         self.ax[0, 1].imshow(rotate_image(gaussian_filter(self.sign, sigma=self.sigma_s), self.rotateMap),
-    #                              cmap=pl.cm.jet)
-    #     elif self.s_method == 'median':
-    #         self.ax[0, 1].imshow(rotate_image(median_filter(self.sign, int(self.sigma_s)), self.rotateMap),
-    #                              cmap=pl.cm.jet)
-    #     self.ax[0, 1].set_title('Sign map')
-    #
-    #     # Plot reference map (Zhuang et al. 2017, Figure 3C)
-    #     # try:
-    #     #     reference = pl.imread(
-    #     #         r'C:\Users\TrenholmLab\TrenholmLab_Analysis_Scripts\Retinotopic_Mapping\Reference_Zhuang_2017_Fig3.png')
-    #     # except:
-    #     #     reference = np.zeros_like(self.sign)
-    #     # self.ax[0, 2].imshow(reference)
-    #     # self.ax[0, 2].get_xaxis().set_visible(False)
-    #     # self.ax[0, 2].get_yaxis().set_visible(False)
-    #     # self.ax[0, 2].set_title('Reference')
-    #
-    #     # Plot contour plots
-    #     azimuth_map, elevation_map = self._get_contours()
-    #     # Plot azimuth contour
-    #     azi_contour = self.ax[1, 0].contourf(rotate_image(azimuth_map, self.rotateMap), cmap=pl.cm.jet, levels=10,
-    #                                          zorder=-1)
-    #
-    #     self.ax[1, 0].imshow(rotate_image(self.patch, self.rotateMap), cmap=pl.cm.gray)
-    #     pl.colorbar(azi_contour, ax=self.ax[1, 0], fraction = 0.04)
-    #     self.ax[1, 0].set_title('Azimuth Contours')
-    #
-    #     # Plot elevation contour
-    #     self.ax[1, 1].contourf(rotate_image(elevation_map, self.rotateMap), cmap=pl.cm.jet, levels=10, zorder=-1)
-    #     self.ax[1, 1].imshow(rotate_image(self.patch, self.rotateMap), cmap=pl.cm.gray)
-    #     pl.colorbar(azi_contour, ax=self.ax[1, 1], fraction = 0.04)
-    #     self.ax[1, 1].set_title('Elevation Contours')
-    #
-    #     # Interactive plot
-    #     self.ax[1, 2].imshow(rotate_image(self.ref, self.rotateMap), cmap=pl.cm.gray, vmin=0)
-    #     self.ax[1, 2].imshow(rotate_image(self.patch, self.rotateMap), cmap=pl.cm.hsv)
-    #     self.ax[1, 2].set_title('Overlay')
-    #
-    #     cid = self.fig.canvas.mpl_connect('button_press_event', self._onclick)
-    #
-    #     return self.fig, self.ax
-    #
     def plot(self):
-
-        # # Run the GUI
-        # img = rotate_image(self.ref, self.rotateMap)
-        # print(img)
-        # gui = CircleFittingGUI(img)
-        # gui.show()
 
         self.fig, self.ax = pl.subplots(nrows=1, ncols=4, figsize=(18, 5))
 
@@ -418,158 +324,6 @@ class RetinotopicMap():
         self.ax[3].set_xticks([])
         self.ax[3].set_yticks([])
 
-        # self.ax[2].plot([p0_az[0], p1_az[0]], [p0_az[1], p1_az[1]], 'k-', lw=2, zorder=10)
-        # self.ax[3].plot([p0_el[0], p1_el[0]], [p0_el[1], p1_el[1]], 'k-', lw=2, zorder=10)
-
-        #       #### IF YOU WANT TOP MANUALLY SET LIMITS
-        # fig, ax = pl.subplots(nrows=1, ncols=2, figsize=(18, 5))
-        #
-        # azi_data = np.where(self.mask, rotate_image(azimuth_map, self.rotateMap), np.nan)
-        # elev_data = np.where(self.mask, rotate_image(elevation_map, self.rotateMap), np.nan)
-        #
-        # azi_levels = np.linspace(-1.8, 1.8, 15)
-        # elev_levels = np.linspace(-0.4, 1.6, 15)
-        #
-        # azi_contour = self.ax[2].contourf(
-        #     azi_data,
-        #     cmap=pl.cm.jet,
-        #     levels=azi_levels,
-        #     zorder=-1
-        # )
-        #
-        # self.ax[2].imshow(
-        #     rotate_image(self.patch, self.rotateMap),
-        #     cmap=pl.cm.gray,
-        #     norm=norm
-        # )
-        #
-        # elev_contour = self.ax[3].contourf(
-        #     elev_data,
-        #     cmap=pl.cm.jet,
-        #     levels=elev_levels,
-        #     zorder=-1
-        # )
-        #
-        # self.ax[3].imshow(
-        #     rotate_image(self.patch, self.rotateMap),
-        #     cmap=pl.cm.gray,
-        #     norm=norm)
-        #
-        # azi_cbar = pl.colorbar(
-        #     azi_contour,
-        #     ax=self.ax[2],
-        #     fraction=0.04
-        # )
-        #
-        # azi_ticks_phase = azi_cbar.get_ticks()
-        # azi_cbar.set_ticks(azi_ticks_phase)
-        # azi_cbar.set_ticklabels(
-        #     np.round(azi_ticks_phase * deg_per_phase_width, 1)
-        # )
-        # azi_cbar.set_label('Azimuth (°)')
-        #
-        # elev_cbar = pl.colorbar(
-        #     elev_contour,
-        #     ax=self.ax[3],
-        #     fraction=0.04
-        # )
-        #
-        # elev_ticks_phase = elev_cbar.get_ticks()
-        # elev_cbar.set_ticks(elev_ticks_phase)
-        # elev_cbar.set_ticklabels(
-        #     np.round(elev_ticks_phase * deg_per_phase_height, 1)
-        # )
-        # elev_cbar.set_label('Elevation (°)')
-
-        # to get continuous color bar and other funky plotting stuff
-        # from matplotlib.colors import Normalize
-        # from matplotlib.cm import ScalarMappable
-        #
-        # azi_data = np.where(
-        #     self.mask,
-        #     rotate_image(azimuth_map, self.rotateMap),
-        #     np.nan
-        # )
-        #
-        # elev_data = np.where(
-        #     self.mask,
-        #     rotate_image(elevation_map, self.rotateMap),
-        #     np.nan
-        # )
-        #
-        # # Keep the contour plots stepped as before
-        # azi_levels = np.linspace(-1.8, 1.8, 15)
-        # elev_levels = np.linspace(-0.6, 1.6, 15)
-        #
-        # azi_contour = self.ax[2].contourf(
-        #     azi_data,
-        #     cmap=pl.cm.jet,
-        #     levels=azi_levels,
-        #     zorder=-1
-        # )
-        #
-        # self.ax[2].imshow(
-        #     rotate_image(self.patch, self.rotateMap),
-        #     cmap=pl.cm.gray,
-        #     norm=norm
-        # )
-        #
-        # elev_contour = self.ax[3].contourf(
-        #     elev_data,
-        #     cmap=pl.cm.jet,
-        #     levels=elev_levels,
-        #     zorder=-1
-        # )
-        #
-        # self.ax[3].imshow(
-        #     rotate_image(self.patch, self.rotateMap),
-        #     cmap=pl.cm.gray,
-        #     norm=norm
-        # )
-        #
-        # # Continuous colourbar objects, independent of contour levels
-        # azi_mappable = ScalarMappable(
-        #     norm=Normalize(vmin=azi_levels[0], vmax=azi_levels[-1]),
-        #     cmap=pl.cm.jet
-        # )
-        # azi_mappable.set_array([])
-        #
-        # elev_mappable = ScalarMappable(
-        #     norm=Normalize(vmin=elev_levels[0], vmax=elev_levels[-1]),
-        #     cmap=pl.cm.jet
-        # )
-        # elev_mappable.set_array([])
-        #
-        # # Degree labels to display
-        # degree_ticks_az = np.array([-50, 0, 50])
-        # degree_ticks_el = np.array([-10, 20, 50])
-        #
-        # # Convert desired degree positions back into phase positions
-        # azi_phase_ticks = degree_ticks_az / deg_per_phase_width
-        # elev_phase_ticks = degree_ticks_el / deg_per_phase_height
-        #
-        # # Continuous azimuth colourbar
-        # azi_cbar = pl.colorbar(
-        #     azi_mappable,
-        #     ax=self.ax[2],
-        #     fraction=0.04
-        # )
-        # azi_cbar.set_ticks(azi_phase_ticks)
-        # azi_cbar.set_ticklabels(['-50', '0', '50'])
-        # azi_cbar.set_label('Azimuth (°)')
-        #
-        # # Continuous elevation colourbar
-        # elev_cbar = pl.colorbar(
-        #     elev_mappable,
-        #     ax=self.ax[3],
-        #     fraction=0.04
-        # )
-        # elev_cbar.set_ticks(elev_phase_ticks)
-        # elev_cbar.set_ticklabels(['-10', '20', '50'])
-        # elev_cbar.set_label('Elevation (°)')
-
-        ###################
-
         # Plot sign map - flip by 90 degrees ccw
         self.ax[1].imshow(np.where(self.mask, rotate_image(self.ref, self.rotateMap), np.nan), cmap=pl.cm.gray, vmin=0) # plot image
         self.ax[1].imshow(np.where(self.mask,rotate_image(self.patch, self.rotateMap), np.nan), cmap=pl.cm.hsv) # plot contours
@@ -584,27 +338,6 @@ class RetinotopicMap():
             os.makedirs(os.path.join(fr'E:\retmap_figures', animal_name))
         plt.savefig(fr'E:\retmap_figures\{animal_name}\{animal_name}{day}{subfile}.png')
         plt.savefig(fr'E:\retmap_figures\{animal_name}\{animal_name}{day}{subfile}.svg')
-        # line_path = os.path.join(self.savefolder, self.savename + '_line.npy')
-
-        # if self.draw_lines:
-        #     self.line_gui = LineDrawingGUI(azimuth_map, elevation_map)
-        #     self.line_gui.show()
-        #
-        #     while not self.line_gui.done:
-        #         plt.pause(0.1)
-        #         time.sleep(0.1)
-        #
-        #     print("Azimuth line:", self.line_gui.az_line)
-        #     print("Elevation line:", self.line_gui.el_line)
-        #
-        #     self.az_line = self.line_gui.az_line
-        #     self.el_line = self.line_gui.el_line
-        #
-        #     lines = [self.az_line, self.el_line]
-        #     np.save(line_path, lines)
-        # else:
-        #     [self.az_line, self.el_line] = np.load(line_path)
-
 
         # plt.figure()
         # Create a mask for pixels with sufficiently high amplitude.
@@ -659,50 +392,8 @@ class RetinotopicMap():
         # plt.set_title('amp map')
         # ax[1].set_title('el map')
         plt.colorbar(shrink = 0.4)
-        # fig.colorbar(a, ax=ax[0], label='Amplitude')
-        # fig.colorbar(e, ax=ax[1], label='Elevation')
-        plt.show()
 
-        #
-        #
-        # plt.figure(figsize = (3,3))
-        # plt.imshow(self.masked_patch_map)
-        # # Azimuth line
-        # az = self.az_line
-        # plt.plot([az[0][0], az[1][0]], [az[0][1], az[1][1]], 'k-', linewidth=2, label='Azimuth line')
-        #
-        # # Elevation line
-        # el = self.el_line
-        # plt.plot([el[0][0], el[1][0]], [el[0][1], el[1][1]], 'k--', linewidth=2, label='Elevation line')
-        #
-        # plt.legend()
-        # plt.title(f"{self.animal}: A&E lines on patch")
-        # plt.show()
-        #
-        # from skimage.measure import profile_line
-        # # import matplotlib.pyplot as plt
-        # # import numpy as np
-        #
-        # az = self.az_line
-        # el = self.el_line
-        #
-        # # convert (x,y) -> (row,col) = (y,x)
-        # az_start = (az[0][1], az[0][0])
-        # az_end = (az[1][1], az[1][0])
-        #
-        # el_start = (el[0][1], el[0][0])
-        # el_end = (el[1][1], el[1][0])
-        #
-        # az_profile = profile_line(self.masked_patch_map, az_start, az_end, mode='constant', cval=np.nan, order=0)
-        # el_profile = profile_line(self.masked_patch_map, el_start, el_end, mode='constant', cval=np.nan, order=0)
-        #
-        # plt.figure(figsize = (4,3))
-        # plt.plot(az_profile, 'k-',  c = 'blue', label='Azimuth line')
-        # plt.plot(el_profile, 'k--', c = 'red', label='Elevation line')
-        # plt.ylim([-1.2,1.2])
-        # plt.title(f"{self.animal}: Line profiles")
-        # plt.legend()
-        # plt.show()
+        plt.show()
 
         return self.fig, self.ax
     def plot_raw(self):
@@ -861,71 +552,6 @@ class PhaseMap():
 
         return True
 
-
-
-
-
-#
-# if __name__ == '__main__':
-#     # Setup parser
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("config", help="File path to config file")
-#     parser.add_argument("-m", "--mode",
-#                         help="Choose analysis mode: 1 - Create complex fields\t 2 - Create and plot sign map")
-#     args = parser.parse_args()
-#
-#     # Open config file
-#     try:
-#         params = load_parameters(args.config)
-#     except:
-#         raise ValueError("Cannot open config file or config file does not exist!")
-#
-#     # Log info
-#     print('Running Retinotopic_mapping.py %s\t' % (version), datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-#     print('Config file: ', args.config)
-#     print('Running mode %s' % (args.mode))
-#     print('Analysis folder: ', params['savefolder'], '\n')
-#
-#     # Determine mode
-#     if args.mode == '1':
-#         phasemap = PhaseMap(inputfolder=params['inputfolder'],
-#                             savefolder=params['savefolder'],
-#                             savename=params['savename'],
-#                             templates=(params['template_a'], params['template_e']),
-#                             evt_suffix=params['evt_suffix'],
-#                             framerate=float(params['framerate']),
-#                             nrep=int(params['nrep']),
-#                             timetot_a=float(params['timetot_a']),
-#                             timetot_e=float(params['timetot_e']))
-#
-#         phasemap.run()
-#
-#     elif args.mode == '2':
-#         # Load relevant params
-#         patchmap = RetinotopicMap(savefolder=params['savefolder'],
-#                                   savename=params['savename'],
-#                                   sigma_p=float(params['sigma_p']),
-#                                   sigma_s=float(params['sigma_s']),
-#                                   s_method=params['s_method'],
-#                                   shiftPhase=int(params['shiftPhase']),
-#                                   sigma_t=float(params['sigma_t']),
-#                                   sigma_c=float(params['sigma_c']),
-#                                   openIter=int(params['openIter']),
-#                                   closeIter=int(params['closeIter']),
-#                                   dilateIter=int(params['dilateIter']),
-#                                   borderWidth=int(params['borderWidth']),
-#                                   epsilon=float(params['epsilon']),
-#                                   rotateMap=int(params['rotateMap']))
-#
-#         patchmap.run()
-#         figraw, axraw = patchmap.plot_raw()
-#         fig, ax = patchmap.plot()
-#
-#         pl.show()
-#
-#     else:
-#         raise ValueError("Mode has to be either 1 (Create complex fields) or 2 (Create and plot sign map)!")
-#
 
 def run_retmap(config_path, mode, min_area = 100, animal_dob=None,animal=None, day=None, draw_mask = True, draw_lines = True):
     """ Run the Retinotopic Mapping script with given parameters. """
